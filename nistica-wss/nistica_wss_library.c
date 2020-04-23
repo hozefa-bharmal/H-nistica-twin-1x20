@@ -84,7 +84,7 @@ int get_vendor_name_of_nistica_wss_module( unsigned int uart_port_number, unsign
 	unsigned int length_of_received_packet_return=0;
 
 	packet_to_transmit = { 0xdd, 0x01, 0x01, 0x05, READ_CMD, 0x06, 0x01, 0x00, 0x01, 0xdd, 0x02 };
-	length_of_packet_to_transmit = strlen(packet_to_transmit); //11
+	length_of_packet_to_transmit = strlen(packet_to_transmit); 
 
 	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
 	if(SUCCESS != transmit_packet)
@@ -159,7 +159,7 @@ int get_minimum_frequency_bound_of_nistica_wss_module( unsigned int uart_port_nu
 	unsigned int length_of_packet_to_transmit=0;
 	unsigned int length_of_received_packet_return=0;
 
-	length_of_packet_to_transmit = strlen(packet_to_transmit); //11
+	length_of_packet_to_transmit = strlen(packet_to_transmit); 
 
 	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
 	if(SUCCESS != transmit_packet)
@@ -234,7 +234,7 @@ int get_maximum_frequency_bound_of_nistica_wss_module( unsigned int uart_port_nu
 	unsigned int length_of_packet_to_transmit=0;
 	unsigned int length_of_received_packet_return=0;
 
-	length_of_packet_to_transmit = strlen(packet_to_transmit); //11
+	length_of_packet_to_transmit = strlen(packet_to_transmit); 
 
 	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
 	if(SUCCESS != transmit_packet)
@@ -311,7 +311,7 @@ int get_minimum_channel_bandwidth_of_nistica_wss_module( unsigned int uart_port_
 	unsigned int length_of_packet_to_transmit=0;
 	unsigned int length_of_received_packet_return=0;
 
-	length_of_packet_to_transmit = strlen(packet_to_transmit); //11
+	length_of_packet_to_transmit = strlen(packet_to_transmit); 
 
 	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
 	if(SUCCESS != transmit_packet)
@@ -373,7 +373,7 @@ int get_minimum_channel_bandwidth_of_nistica_wss_module( unsigned int uart_port_
  *  <BR>  0  : Success
  *  <BR> -1  : Failure
 **/
-int get_maximum_channel_bandwidth_of_nistica_wss_module( unsigned int uart_port_number, short* maximum_wss_id_value )
+int get_maximum_wss_id_value_of_nistica_wss_module( unsigned int uart_port_number, short* maximum_wss_id_value )
 {
 	char packet_to_transmit[] = { 0xdd, 0x01, 0x19, 0x05, READ_CMD, 0x80, 0x0F, 0x00, 0x91, 0xdd, 0x02 };
 	char uart_received_packet_return[255]={0};
@@ -384,7 +384,7 @@ int get_maximum_channel_bandwidth_of_nistica_wss_module( unsigned int uart_port_
 	unsigned int length_of_packet_to_transmit=0;
 	unsigned int length_of_received_packet_return=0;
 
-	length_of_packet_to_transmit = strlen(packet_to_transmit); //11
+	length_of_packet_to_transmit = strlen(packet_to_transmit);
 
 	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
 	if(SUCCESS != transmit_packet)

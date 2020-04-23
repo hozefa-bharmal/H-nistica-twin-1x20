@@ -16,4 +16,5 @@ int get_maximum_frequency_bound_of_nistica_wss_module( unsigned int uart_port_nu
 
 int get_minimum_channel_bandwidth_of_nistica_wss_module( unsigned int uart_port_number, unsigned short* minimum_channel_bandwidth );
 
-int get_maximum_channel_bandwidth_of_nistica_wss_module( unsigned int uart_port_number, short* maximum_wss_id_value );
+int get_maximum_wss_id_value_of_nistica_wss_module( unsigned int uart_port_number, short* maximum_wss_id_value );
+
