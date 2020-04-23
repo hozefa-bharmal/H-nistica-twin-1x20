@@ -184,6 +184,7 @@ int get_minimum_frequency_bound_of_nistica_wss_module( unsigned int uart_port_nu
 	
 	If above validation passes ->
 				extract Minimum Frequency bound value from uart_received_packet_return[5] and uart_received_packet_return[6], OR it and store the result in minimum_frequency_bound
+    			multiply the result by 3.125 and store it in minimum_frequency_band
 	
 	If any validation fail -> 
 				Return error with appropriate error message/reason for failure
@@ -259,7 +260,8 @@ int get_maximum_frequency_bound_of_nistica_wss_module( unsigned int uart_port_nu
 	Validate RES -> SUCCESS == uart_received_packet_return[4];
 	
 	If above validation passes ->
-				extract Maximum Frequency bound value from uart_received_packet_return[5] and uart_received_packet_return[6], OR it and store the result in maximum_frequency_bound
+				extract Maximum Frequency bound value from uart_received_packet_return[5] and uart_received_packet_return[6], OR both bytes
+    			multiply the result by 3.125 and store it in maximum_frequency_band
 	
 	If any validation fail -> 
 				Return error with appropriate error message/reason for failure
