@@ -19,3 +19,5 @@ int get_minimum_channel_bandwidth_of_nistica_wss_module( unsigned int uart_port_
 int get_maximum_wss_id_value_of_nistica_wss_module( unsigned int uart_port_number, short* maximum_wss_id_value );
 
 int get_maximum_ocm_id_value_of_nistica_wss_module( unsigned int uart_port_number, short* maximum_ocm_id_value );
+
+int get_maximum_waveplan_id_value_of_nistica_wss_module( unsigned int uart_port_number, short* maximum_ocm_id_value );
