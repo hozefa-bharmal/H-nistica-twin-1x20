@@ -680,7 +680,7 @@ int get_module_supports_table_and_row_commands_of_nistica_wss_module( unsigned i
 	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
 	if(SUCCESS != transmit_packet)
 	{
-        printf("Error : Failed to transmit packet via UART Port in get_module_supports_multi_commands_of_nistica_wss_module()\n");
+        printf("Error : Failed to transmit packet via UART Port in get_module_supports_table_and_row_commands_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
@@ -689,7 +689,7 @@ int get_module_supports_table_and_row_commands_of_nistica_wss_module( unsigned i
 	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
 	if(SUCCESS != receive_packet)
 	{
-        printf("Error : Failed to receive packet via UART Port in get_module_supports_multi_commands_of_nistica_wss_module()\n");
+        printf("Error : Failed to receive packet via UART Port in get_module_supports_table_and_row_commands_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
@@ -753,7 +753,7 @@ int get_module_supports_long_cmd_format_of_nistica_wss_module( unsigned int uart
 	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
 	if(SUCCESS != transmit_packet)
 	{
-        printf("Error : Failed to transmit packet via UART Port in get_module_supports_multi_commands_of_nistica_wss_module()\n");
+        printf("Error : Failed to transmit packet via UART Port in get_module_supports_long_cmd_format_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
@@ -762,7 +762,7 @@ int get_module_supports_long_cmd_format_of_nistica_wss_module( unsigned int uart
 	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
 	if(SUCCESS != receive_packet)
 	{
-        printf("Error : Failed to receive packet via UART Port in get_module_supports_multi_commands_of_nistica_wss_module()\n");
+        printf("Error : Failed to receive packet via UART Port in get_module_supports_long_cmd_format_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
@@ -827,7 +827,7 @@ int get_module_supports_broadcast_of_nistica_wss_module( unsigned int uart_port_
 	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
 	if(SUCCESS != transmit_packet)
 	{
-        printf("Error : Failed to transmit packet via UART Port in get_module_supports_multi_commands_of_nistica_wss_module()\n");
+        printf("Error : Failed to transmit packet via UART Port in get_module_supports_broadcast_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
@@ -836,7 +836,7 @@ int get_module_supports_broadcast_of_nistica_wss_module( unsigned int uart_port_
 	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
 	if(SUCCESS != receive_packet)
 	{
-        printf("Error : Failed to receive packet via UART Port in get_module_supports_multi_commands_of_nistica_wss_module()\n");
+        printf("Error : Failed to receive packet via UART Port in get_module_supports_broadcast_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 

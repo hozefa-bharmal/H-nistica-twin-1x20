@@ -36,3 +36,12 @@ int set_warm_boot_mode_for_nistica_wss_module( unsigned int uart_port_number, sh
 int set_watchdog_reset_boot_mode_for_nistica_wss_module( unsigned int uart_port_number, short* boot_mode );
 
 int set_hot_boot_mode_for_nistica_wss_module( unsigned int uart_port_number, short* boot_mode );
+
+int get_module_supports_multi_commands_of_nistica_wss_module( unsigned int uart_port_number, short* multicmd );
+
+int get_module_supports_table_and_row_commands_of_nistica_wss_module( unsigned int uart_port_number,short* table_row_cmd );
+
+int get_module_supports_long_cmd_format_of_nistica_wss_module( unsigned int uart_port_number,short* longcmd );
+
+int get_module_supports_broadcast_of_nistica_wss_module( unsigned int uart_port_number,short* broadcast );
+
