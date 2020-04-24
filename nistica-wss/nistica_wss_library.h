@@ -23,3 +23,5 @@ int get_maximum_ocm_id_value_of_nistica_wss_module( unsigned int uart_port_numbe
 int get_maximum_waveplan_id_value_of_nistica_wss_module( unsigned int uart_port_number, short* maximum_ocm_id_value );
 
 int get_power_on_self_test_results_of_nistica_wss_module( unsigned int uart_port_number, short* power_test_result );
+
+int get_module_status_of_nistica_wss_module( unsigned int uart_port_number, short* module_status );
