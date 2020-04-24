@@ -1,4 +1,5 @@
 #define READ_CMD 0x02
+#define WRITE_CMD 0x01
 
 #define SUCCESS 0
 
@@ -27,3 +28,5 @@ int get_power_on_self_test_results_of_nistica_wss_module( unsigned int uart_port
 int get_module_status_of_nistica_wss_module( unsigned int uart_port_number, short* module_status );
 
 int get_boot_mode_of_nistica_wss_module( unsigned int uart_port_number, short* boot_mode );
+
+int set_cold_boot_mode_for_nistica_wss_module( unsigned int uart_port_number, short* boot_mode );

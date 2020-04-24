@@ -1087,3 +1087,76 @@ int get_boot_mode_of_nistica_wss_module( unsigned int uart_port_number, short* b
 	If any validation fail ->
 				Return error with appropriate error message/reason for failure
 }
+
+/**
+ * @brief Function will set cold boot to the nistica module.
+ *
+ * This function reset the boot state as cold boot for module.
+ * Function forms a command structure consisting of Message ID, Command, Object ID,
+ * Instance, Parameter and Checksum.
+ * The Transmit and Receive packet is encoded with '0xdd 0x01' in the beginning and
+ * '0xdd 0x02' in the end representing RS-232 frame marker required to ensure
+ * synchronization between control module and WSS.
+ *
+ * Tx packet to WSS module : 0xdd 0x01 MID LEN CMD OBJ INS PAR DATA SUM 0xdd 0x02
+ *		MID=0x03; OBJ=0x91; INS=0x01; PAR=0x00; DATA=0x01 SUM (1 byte) = XOR from MID to PAR
+ *
+ * Response from WSS : 0xdd 0x01 MID LEN RES DATA SUM 0xdd 0x02
+ *		DATA (2 bytes)
+ *
+ * Function takes two arguments - UART port number and character pointer. UART port
+ * is used to transmit and receive data packets from/to Nistica WSS module. Certain
+ * validation in the receive packet such as Message ID and Result is done by the function.
+ * Required Data is extracted and returned.
+ *
+ * @param uart_port_number
+ * an unsigned integer, represents the particular UART port to which Nistica WSS is connected
+ *
+ *	Example: 1
+ *
+ * @param power_test_result
+ * a signed short pointer, Represents bootmode.
+ *
+ * @return an integer
+ *  <BR>  0  : Success
+ *  <BR> -1  : Failure
+**/
+
+int set_cold_boot_mode_for_nistica_wss_module( unsigned int uart_port_number, short* boot_mode )
+{
+	char packet_to_transmit[] = { 0xdd, 0x01, 0x03, 0x05, WRITE_CMD, 0x91, 0x01, 0x00, 0x00, 0x01, 0x97, 0xdd, 0x02 };
+	char uart_received_packet_return[255]={0};
+
+	int transmit_packet=0,
+	    receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+
+	length_of_packet_to_transmit = strlen(packet_to_transmit);
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+        printf("Error : Failed to transmit packet via UART Port in set_cold_boot_mode_for_nistica_wss_module()\n");
+        return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+        printf("Error : Failed to receive packet via UART Port in set_cold_boot_mode_for_nistica_wss_module()\n");
+        return FAILURE;
+	}
+
+    Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+    Validate RES -> SUCCESS == uart_received_packet_return[4];
+
+    If above validation passes ->
+				return the boot_mode
+
+	If any validation fail ->
+				Return error with appropriate error message/reason for failure
+}
