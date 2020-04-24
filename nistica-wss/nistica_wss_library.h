@@ -32,3 +32,5 @@ int get_boot_mode_of_nistica_wss_module( unsigned int uart_port_number, short* b
 int set_cold_boot_mode_for_nistica_wss_module( unsigned int uart_port_number, short* boot_mode );
 
 int set_warm_boot_mode_for_nistica_wss_module( unsigned int uart_port_number, short* boot_mode );
+
+int set_watchdog_reset_boot_mode_for_nistica_wss_module( unsigned int uart_port_number, short* boot_mode );
