@@ -283,8 +283,8 @@ int get_maximum_frequency_bound_of_nistica_wss_module( unsigned int uart_port_nu
  * is used to transmit and receive data packets from/to Nistica WSS module. Certain
  * validation in the receive packet such as Message ID and Result is done by the function
  * and Data is extracted and returned.
- * The value returned by the module will be in terms of 3.125 GHz unit. Inorder to obtain
- * the actual Frequency in GHz, resultant is multiplied with 3.125.
+ * The value returned by the module will be in terms of 3.125 Ghz unit. Inorder to obtain
+ * the actual Frequency in Ghz, resultant is multiplied with 3.125.
  *
  * @param uart_port_number
  * an unsigned integer, represents the particular UART port to which Nistica WSS is connected
@@ -1379,3 +1379,106 @@ int set_hot_boot_mode_for_nistica_wss_module( unsigned int uart_port_number, sho
 	If any validation fail ->
 				Return error with appropriate error message/reason for failure
 }
+
+ /************************************************
+*************************************************
+*		Channel Configurations
+*************************************************
+************************************************/
+/**
+
+/**
+ * @brief Function will Set Waveplan in Nistica WSS module
+ *
+ * This function is used to set the Waveplan configuration into WSS module.
+ * Function forms a command structure consisting of Message ID, Command, several
+ * Object IDs set such as Waveplan First channel centre frequency, Per-Channel Bandwidth,
+ * Waveplan Options, Number of Channels and lastly Clear to Waveplan that writes
+ * the Waveplan into module. To each Object - Instance, Parameter and Checksum are
+ * associated.
+ *
+ * Center frequency and Bandwidth is converted in units of 3.125 and then added
+ * to the command structure. Example: Center Frequency = 191.3 Thz (61216 * 3.125)
+ * The Transmit and Receive packet is encoded with '0xdd 0x01' in the beginning and
+ * '0xdd 0x02' in the end representing RS-232 frame marker required to ensure
+ * synchronization between control module and WSS.
+ *
+ * Function takes four arguments - UART port number, Number of channels, First
+ * Channel Center Frequency and Bandwidth. UART port is used to transmit and
+ * receive data packets from/to Nistica WSS module. Response for the transmit
+ * message is received from module through UART. Certain validation in the receive
+ * packet such as Message ID and Result is done and status is returned.
+ *
+ * @param uart_port_number
+ * an unsigned integer, represents the particular UART port to which Nistica WSS is connected
+ *	Example: 1
+ *
+ * @param number_of_channels
+ * an unsigned short, represents the number of channels to be created in waveplan
+ *	Example: 40
+ *
+ * @param center_frequency_in_Thz
+ * an unsigned short, represents the number of channels to be created in waveplan
+ *	Example: 191.3 Thz
+ *
+ * @param bandwidth_in_Ghz
+ * an unsigned short, represents the number of channels to be created in waveplan
+ *	Example: 50 Ghz
+ *
+ * @return an integer
+ *  <BR>  0  : Success
+ *  <BR> -1  : Failure
+**/
+int set_waveplan_of_nistica_wss_module( unsigned int uart_port_number, unsigned short number_of_channels, float center_frequency_in_Thz, float bandwidth_in_Ghz )
+{
+	char uart_received_packet_return[255]={0};
+
+	int transmit_packet=0,
+	    receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+
+	int center_frequency_in_3125_multiple = 1000 * (center_frequency_in_Thz / 3.125);
+	int bandwidth_in_3125_multiple = 1000 * (bandwidth_in_Ghz / 3.125);
+	
+	unsigned char *number_of_channels_in_memory = (unsigned char*) &number_of_channels;
+	unsigned char *center_frequency_in_memory = (unsigned char*) &center_frequency_in_3125_multiple;
+	unsigned char *bandwidth_in_memory = (unsigned char*) &bandwidth_in_3125_multiple;
+	
+	unsigned char packet_to_transmit[] = {0xdd, 0x01, 0x01, 0x1B, MULTI_OBJ_WRITE, 
+										0xA3, 0x01, 0x01, number_of_channels_in_memory[0], number_of_channels_in_memory[1],
+										0xA0, 0x01, 0x01, center_frequency_in_memory[0], center_frequency_in_memory[1],
+										0xA1, 0X01, 0X01, bandwidth_in_memory[0], bandwidth_in_memory[1],
+										0XA2, 0X01, 0X01, 0X00, 0X01,
+										0XA4, 0X01, 0X01, 0X00, 0X01,
+										0x73, 0xdd, 0x02};
+
+	length_of_packet_to_transmit = strlen(packet_to_transmit);
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+        printf("Error : Failed to transmit packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+        printf("Error : Failed to receive packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        return FAILURE;
+	}
+
+    Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+    Validate RES -> SUCCESS == uart_received_packet_return[4];
+
+    If above validation passes ->
+				return SUCCESS
+
+	If any validation fail ->
+				Return error with appropriate error message/reason for failure
+}
+

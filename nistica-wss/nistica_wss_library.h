@@ -45,3 +45,10 @@ int get_module_supports_long_cmd_format_of_nistica_wss_module( unsigned int uart
 
 int get_module_supports_broadcast_of_nistica_wss_module( unsigned int uart_port_number,short* broadcast );
 
+ /************************************************
+*************************************************
+*		Channel Configurations
+*************************************************
+************************************************/
+
+int set_waveplan_of_nistica_wss_module( unsigned int uart_port_number, unsigned short number_of_channels, float center_frequency_in_Thz, float bandwidth_in_Ghz );
