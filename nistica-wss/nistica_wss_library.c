@@ -1482,3 +1482,44 @@ int set_waveplan_of_nistica_wss_module( unsigned int uart_port_number, unsigned 
 				Return error with appropriate error message/reason for failure
 }
 
+int set_channel_port_of_nistica_wss_module( unsigned int uart_port_number, unsigned short start_of_channel, 
+										 unsigned short end_of_channel, char port_id)
+{
+	int length = end_of_channel + 5;
+	char packet_to_transmit[] = { 0xdd, 0x01, 0x20, length, ARRAY_WRITE, 0xAA, start_of_channel, 0x01, end_of_channel, port_id,"calcludate the checksum", 0xdd, 0x02 };
+	char uart_received_packet_return[255]={0};
+
+	int transmit_packet=0,
+	    receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+
+	length_of_packet_to_transmit = strlen(packet_to_transmit);
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+        printf("Error : Failed to transmit packet via UART Port in  get_boot_mode_of_nistica_wss_module()\n");
+        return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+        printf("Error : Failed to receive packet via UART Port in  get_boot_mode_of_nistica_wss_module()\n");
+        return FAILURE;
+	}
+
+    Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+    Validate RES -> SUCCESS == uart_received_packet_return[4];
+
+    If above validation passes ->
+				return the SUCCESS
+
+	If any validation fail ->
+				Return error with appropriate error message/reason for failure
+}
+
