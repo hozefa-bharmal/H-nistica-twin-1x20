@@ -1523,3 +1523,94 @@ int set_channel_port_of_nistica_wss_module( unsigned int uart_port_number, unsig
 				Return error with appropriate error message/reason for failure
 }
 
+/**
+ * @brief Function will Assign Waveplan ID for a waveplan in Nistica WSS module
+ *
+ * This function is used to set the Waveplan ID for a particular waveplan configuration.
+ * Function forms a command structure consisting of Message ID, Command, Object ID,
+ * WSS ID, Altconf ID and Waveplan ID. User provides the WSS ID, Altconf ID and Waveplan ID.
+ *
+ * When this function is called, it triggers a switchover in WSS module. If
+ * BootSwRestore is enabled, this active configuration is part of the state saved
+ * to non-volatile memory and restored at cold boot. If not, the module cold
+ * boots into configuration 0, and all configurations will be full dark.
+ *
+ * The Transmit and Receive packet is encoded with '0xdd 0x01' in the beginning
+ * and '0xdd 0x02' in the end representing RS-232 frame marker required to ensure
+ * synchronization between control module and WSS.
+ *
+ * Function takes four arguments - UART port number, WSS ID, Altconf ID and
+ * Waveplan ID. UART port is used to transmit and receive data packets from/to
+ * Nistica WSS module. Response for the transmit message is received from module
+ * through UART. Certain validation in the receive packet such as Message ID
+ * and Result is done and status is returned.
+ *
+ * @param uart_port_number
+ * an unsigned integer, represents the particular UART port to which Nistica WSS is connected
+ *	Example: 1
+ *
+ * @param wss_id
+ * an unsigned short, that refers to WSS in the module
+ *	Example: 0, 1, 2
+ *
+ * @param altconf_id
+ * an unsigned short, represents the alternate configuration ID of a particular configuration
+ *	Example: 0, 1, 2, 3
+ *
+ * @param waveplan_id
+ * an unsigned short, represents the Waveplan ID to be assigned for a waveplan
+ *	Example: 2
+ *
+ * @return an integer
+ *  <BR>  0  : Success
+ *  <BR> -1  : Failure
+**/
+int assign_particular_waveplan_of_nistica_wss_module( unsigned int uart_port_number, unsigned short wss_id, unsigned short altconf_id, unsigned short *waveplan_id )
+{
+	char uart_received_packet_return[255]={0};
+
+	int transmit_packet=0,
+	    receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+	unsigned char checksum = 0;
+
+	unsigned char table_byte = (char)(( altconf_id << 4 )| wss_id); // combining the wss_id and altconf_id into single byte
+	unsigned char *waveplan_id_pointer = (unsigned char*) &waveplan_id;
+
+	unsigned char packet_to_transmit[] = {0xdd, 0x01, 0x01, 0x1B, WRITE_CMD | 0x20, 0xA8, table_byte, 0x06, 0x01, waveplan_id_pointer[0], waveplan_id_pointer[1] };
+				
+	checksum = calculate_checksum( packet_to_transmit[2], strlen(packet_to_transmit));
+	packet_to_transmit[11] = checksum;
+	packet_to_transmit[12] = 0xdd;
+	packet_to_transmit[13] = 0x02;
+
+	length_of_packet_to_transmit = strlen(packet_to_transmit);
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+        printf("Error : Failed to transmit packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+        printf("Error : Failed to receive packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        return FAILURE;
+	}
+
+    Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+    Validate RES -> SUCCESS == uart_received_packet_return[4];
+
+    If above validation passes ->
+				return SUCCESS
+
+	If any validation fail ->
+				Return error with appropriate error message/reason for failure
+}
+

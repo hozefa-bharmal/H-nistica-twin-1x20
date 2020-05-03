@@ -2,6 +2,8 @@
 #define WRITE_CMD 0x01
 #define ARRAY_WRITE 0x10
 
+#define RS_232_START_BYTES {0xdd, 0x01}
+
 #define SUCCESS 0
 
  /************************************************
@@ -53,5 +55,8 @@ int get_module_supports_broadcast_of_nistica_wss_module( unsigned int uart_port_
 ************************************************/
 
 int set_waveplan_of_nistica_wss_module( unsigned int uart_port_number, unsigned short number_of_channels, float center_frequency_in_Thz, float bandwidth_in_Ghz );
-int set_channel_port_of_nistica_wss_module( unsigned int uart_port_number, unsigned short start_of_channel, 
-										 unsigned short end_of_channel, char port_id)
+
+int assign_particular_waveplan_of_nistica_wss_module( unsigned int uart_port_number, unsigned short wss_id, unsigned short altconf_id, unsigned short waveplan_id );
+
+int set_channel_port_of_nistica_wss_module( unsigned int uart_port_number, unsigned short start_of_channel, unsigned short end_of_channel, char port_id);
+
