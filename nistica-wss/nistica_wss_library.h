@@ -58,6 +58,8 @@ int get_bootloader_version_of_nistica_wss_module( unsigned int uart_port_number,
 
 int get_module_uptime_low_word_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *module_uptime_low );
 
+int get_module_uptime_high_word_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *module_uptime_high );
+
  /************************************************
 *************************************************
 *		Channel Configurations
