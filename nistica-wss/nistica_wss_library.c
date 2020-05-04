@@ -1459,7 +1459,7 @@ int set_waveplan_of_nistica_wss_module( unsigned int uart_port_number, unsigned 
 	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
 	if(SUCCESS != transmit_packet)
 	{
-        printf("Error : Failed to transmit packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        printf("Error : Failed to transmit packet via UART Port in set_waveplan_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
@@ -1468,7 +1468,7 @@ int set_waveplan_of_nistica_wss_module( unsigned int uart_port_number, unsigned 
 	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
 	if(SUCCESS != receive_packet)
 	{
-        printf("Error : Failed to receive packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        printf("Error : Failed to receive packet via UART Port in set_waveplan_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
@@ -1624,7 +1624,7 @@ int set_channel_port_and_attenuation_of_nistica_wss_module( unsigned int uart_po
 	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
 	if(SUCCESS != transmit_packet)
 	{
-        printf("Error : Failed to transmit packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        printf("Error : Failed to transmit packet via UART Port in set_channel_port_and_attenuation_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
@@ -1633,7 +1633,7 @@ int set_channel_port_and_attenuation_of_nistica_wss_module( unsigned int uart_po
 	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
 	if(SUCCESS != receive_packet)
 	{
-        printf("Error : Failed to receive packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        printf("Error : Failed to receive packet via UART Port in set_channel_port_and_attenuation_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
@@ -1739,7 +1739,7 @@ int set_channel_port_and_attenuation_in_twin_wss_of_nistica_wss_module( unsigned
 	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
 	if(SUCCESS != transmit_packet)
 	{
-        printf("Error : Failed to transmit packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        printf("Error : Failed to transmit packet via UART Port in set_channel_port_and_attenuation_in_twin_wss_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
@@ -1748,7 +1748,7 @@ int set_channel_port_and_attenuation_in_twin_wss_of_nistica_wss_module( unsigned
 	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
 	if(SUCCESS != receive_packet)
 	{
-        printf("Error : Failed to receive packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        printf("Error : Failed to receive packet via UART Port in set_channel_port_and_attenuation_in_twin_wss_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
@@ -1830,7 +1830,7 @@ int assign_particular_waveplan_of_nistica_wss_module( unsigned int uart_port_num
 	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
 	if(SUCCESS != transmit_packet)
 	{
-        printf("Error : Failed to transmit packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        printf("Error : Failed to transmit packet via UART Port in assign_particular_waveplan_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
@@ -1839,7 +1839,7 @@ int assign_particular_waveplan_of_nistica_wss_module( unsigned int uart_port_num
 	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
 	if(SUCCESS != receive_packet)
 	{
-        printf("Error : Failed to receive packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        printf("Error : Failed to receive packet via UART Port in assign_particular_waveplan_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
