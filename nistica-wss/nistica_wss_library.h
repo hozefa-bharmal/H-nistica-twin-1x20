@@ -60,3 +60,4 @@ int assign_particular_waveplan_of_nistica_wss_module( unsigned int uart_port_num
 
 int set_channel_port_of_nistica_wss_module( unsigned int uart_port_number, unsigned short start_of_channel, unsigned short end_of_channel, char port_id);
 
+int set_channel_port_and_attenuation_of_nistica_wss_module( unsigned int uart_port_number, unsigned short wss_id, unsigned short altconf_id, unsigned char *channel_numbers, unsigned char *port_data, unsigned char *attenuation_data );

@@ -1524,6 +1524,130 @@ int set_channel_port_of_nistica_wss_module( unsigned int uart_port_number, unsig
 }
 
 /**
+ * @brief Function will Configure Channels in WSS port and apply Attenuation
+ *
+ * This function is used to configure multiple channels to add/drop ports of WSS
+ * and applies attenuation for those channels. Function takes six arguments.
+ * It forms a Long command structure consisting of Message ID, Command, Object ID,
+ * WSS ID, Altconf ID, Channel numbers, Port numbers and Atenuation values.
+ * 
+ * Number of channels is found from 'channel_numbers' argument received. Attenuation
+ * data is converted from float to integer data as per command structure.
+ * First few bytes of 'packet_to_transmit' is initialized with Start bytes, MID,
+ * Length(initially made as 0x00) and Command. Based on the number of channels,
+ * the structure is formed containing Object ID, WSS ID, Altconf ID, Channel numbers,
+ * Port numbers and Attenuation values.
+ *
+ * Later the length bytes are updated which is counted from CMD to Checksum bytes.
+ * Function calculate_crc_16_checksum() is called to calculate checksum. Finally
+ * the Stop bytes are updated in command structure.
+ *
+ * The Transmit and Receive packet is encoded with '0xdd 0x01' in the beginning
+ * and '0xdd 0x02' in the end representing RS-232 frame marker required to ensure
+ * synchronization between control module and WSS.
+ *
+ * UART port is used to transmit and receive data packets from/to Nistica WSS
+ * module. Response for the transmit message is received from module through UART.
+ * Certain validation in the receive packet such as Message ID and Result is done
+ * and status is returned.
+ *
+ * @param uart_port_number
+ * an unsigned integer, represents the particular UART port to which Nistica WSS is connected
+ *	Example: 1
+ *
+ * @param wss_id
+ * an unsigned short, that refers to WSS in the module
+ *	Example: 0, 1, 2
+ *
+ * @param altconf_id
+ * an unsigned short, represents the alternate configuration ID of a particular configuration
+ *	Example: 0, 1, 2, 3
+ *
+ * @param channel_numbers
+ * an unsigned char pointer containing channel numbers to be configured in WSS
+ *	Example: 1,2,10,35
+ *
+ * @param port_data
+ * an unsigned char pointer containing add/drop port number to which channel need to be switched
+ *	Example: 1,2,3,20
+ *
+ * @param attenuation_data
+ * an unsigned char pointer containing attenuation values which should be applied to channels
+ *	Example: 5.0, 6.7, 25.5
+ *
+ * @return an integer
+ *  <BR>  0  : Success
+ *  <BR> -1  : Failure
+**/
+int set_channel_port_and_attenuation_of_nistica_wss_module( unsigned int uart_port_number, unsigned short wss_id, unsigned short altconf_id, unsigned char *channel_numbers, unsigned char *port_data, unsigned char *attenuation_data )
+{
+	char uart_received_packet_return[255]={0};
+
+	int transmit_packet=0,
+	    receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+	unsigned char checksum = 0;
+
+	find 'number_of_channels' from 'channel_numbers';
+	char attenuation_values_in_integer[number_of_channels];
+
+	unsigned char packet_to_transmit[1600] = {0xdd, 0x01, 0x04, 0x00, 0xFF, 0x00, 0x00, 0x01, 0x21};
+	/*
+		MID = 0x04; Long Command format matching bytes = 0x00, 0xFF;
+		LEN = 0x00, 0x00; (will be updated later once complete packet is formed)
+		CMD = 0x01, 0x21; Presence of Table and Altconf byte (1 + 32 + 256) 
+	*/
+	for(int i=0; i<number_of_channels; i++)
+	{
+		attenuation_values_in_integer[i] = 10 * attenuation_data[i];
+		packet_to_transmit[9+(i*7)] = 0xA9;
+		packet_to_transmit[10+(i*7)] = wss_id;
+		packet_to_transmit[11+(i*7)] = altconf_id;
+		packet_to_transmit[12+(i*7)] = channel_numbers[i];
+		packet_to_transmit[13+(i*7)] = 0x01; //set point parameter
+		packet_to_transmit[14+(i*7)] = port_data[i];
+		packet_to_transmit[15+(i*7)] = attenuation_values_in_integer[i];
+	}	
+	
+	packet_to_transmit[5] = strlen(packet_to_transmit) >> 8;
+	packet_to_transmit[6] = strlen(packet_to_transmit) & 0xFF; //updating length bytes
+
+	checksum = calculate_crc_16_checksum( packet_to_transmit[2], strlen(packet_to_transmit));
+	packet_to_transmit[strlen(packet_to_transmit)] = checksum;
+	packet_to_transmit[strlen(packet_to_transmit)] = 0xdd;
+	packet_to_transmit[strlen(packet_to_transmit)] = 0x02;
+
+	length_of_packet_to_transmit = strlen(packet_to_transmit);
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+        printf("Error : Failed to transmit packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+        printf("Error : Failed to receive packet via UART Port in get_maximum_waveplan_id_value_of_nistica_wss_module()\n");
+        return FAILURE;
+	}
+
+    Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+    Validate RES -> SUCCESS == uart_received_packet_return[4];
+
+    If above validation passes ->
+				return SUCCESS
+
+	If any validation fail ->
+				Return error with appropriate error message/reason for failure
+}
+
+/**
  * @brief Function will Assign Waveplan ID for a waveplan in Nistica WSS module
  *
  * This function is used to set the Waveplan ID for a particular waveplan configuration.
@@ -1579,7 +1703,7 @@ int assign_particular_waveplan_of_nistica_wss_module( unsigned int uart_port_num
 	unsigned char table_byte = (char)(( altconf_id << 4 )| wss_id); // combining the wss_id and altconf_id into single byte
 	unsigned char *waveplan_id_pointer = (unsigned char*) &waveplan_id;
 
-	unsigned char packet_to_transmit[] = {0xdd, 0x01, 0x01, 0x1B, WRITE_CMD | 0x20, 0xA8, table_byte, 0x06, 0x01, waveplan_id_pointer[0], waveplan_id_pointer[1] };
+	unsigned char packet_to_transmit[] = {0xdd, 0x01, 0x01, 0x08, WRITE_CMD | 0x20, 0xA8, table_byte, 0x06, 0x01, waveplan_id_pointer[0], waveplan_id_pointer[1] };
 				
 	checksum = calculate_checksum( packet_to_transmit[2], strlen(packet_to_transmit));
 	packet_to_transmit[11] = checksum;
