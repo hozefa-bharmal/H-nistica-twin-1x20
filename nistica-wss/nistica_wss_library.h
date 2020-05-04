@@ -54,6 +54,8 @@ int get_partition_1_firmware_version_of_nistica_wss_module( unsigned int uart_po
 
 int get_partition_2_firmware_version_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *firmware_version );
 
+int get_bootloader_version_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *bootloader_version );
+
  /************************************************
 *************************************************
 *		Channel Configurations
