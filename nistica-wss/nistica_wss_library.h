@@ -60,6 +60,8 @@ int get_module_uptime_low_word_of_nistica_wss_module( unsigned int uart_port_num
 
 int get_module_uptime_high_word_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *module_uptime_high );
 
+int get_module_supports_array_commands_of_nistica_wss_module( unsigned int uart_port_number, unsigned int status_of_array_cmd );
+
  /************************************************
 *************************************************
 *		Channel Configurations
