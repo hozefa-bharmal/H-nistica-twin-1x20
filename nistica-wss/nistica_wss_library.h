@@ -48,6 +48,8 @@ int get_module_supports_broadcast_of_nistica_wss_module( unsigned int uart_port_
 
 int get_active_partition_number_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *active_partition_number );
 
+int get_booted_partition_number_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *booted_partition_number );
+
  /************************************************
 *************************************************
 *		Channel Configurations
