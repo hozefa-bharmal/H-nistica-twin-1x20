@@ -80,3 +80,8 @@ int set_channel_port_and_attenuation_of_nistica_wss_module( unsigned int uart_po
 
 int set_channel_port_and_attenuation_in_twin_wss_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *channel_numbers, unsigned char *port_data, unsigned char *attenuation_data );
 
+
+int get_number_of_ports_of_nistica_wss_module( unsigned int uart_port_number,unsigned int wss_id, unsigned short *number_of_ports );
+int get_active_configuration_of_nistica_wss_module( unsigned int uart_port_number,unsigned int wss_id, unsigned short *active_configuration_number );
+int set_active_configuration_of_nistica_wss_module( unsigned int uart_port_number, unsigned int wss_id, short active_configuration_number  );
+
