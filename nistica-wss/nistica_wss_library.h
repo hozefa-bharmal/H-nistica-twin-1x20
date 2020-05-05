@@ -72,3 +72,4 @@ int set_waveplan_of_nistica_wss_module( unsigned int uart_port_number, unsigned 
 int set_channel_port_of_nistica_wss_module( unsigned int uart_port_number, unsigned short start_of_channel, 
 										 unsigned short end_of_channel, char port_id);
 int get_number_of_ports_of_nistica_wss_module( unsigned int uart_port_number,unsigned int wss_id, unsigned short *number_of_ports );
+int get_active_configuration_of_nistica_wss_module( unsigned int uart_port_number,unsigned int wss_id, unsigned short *active_configuration_number );
