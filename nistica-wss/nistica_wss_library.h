@@ -48,6 +48,22 @@ int get_module_supports_long_cmd_format_of_nistica_wss_module( unsigned int uart
 
 int get_module_supports_broadcast_of_nistica_wss_module( unsigned int uart_port_number,short* broadcast );
 
+int get_active_partition_number_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *active_partition_number );
+
+int get_booted_partition_number_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *booted_partition_number );
+
+int get_partition_1_firmware_version_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *firmware_version );
+
+int get_partition_2_firmware_version_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *firmware_version );
+
+int get_bootloader_version_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *bootloader_version );
+
+int get_module_uptime_low_word_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *module_uptime_low );
+
+int get_module_uptime_high_word_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *module_uptime_high );
+
+int get_module_supports_array_commands_of_nistica_wss_module( unsigned int uart_port_number, unsigned int status_of_array_cmd );
+
  /************************************************
 *************************************************
 *		Channel Configurations

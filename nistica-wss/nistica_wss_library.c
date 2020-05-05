@@ -851,6 +851,609 @@ int get_module_supports_broadcast_of_nistica_wss_module( unsigned int uart_port_
 }
 
 /**
+* @brief Function will Get active partition number from Nistica WSS module
+*
+* This function reads the Flash Information from WSS module and then the required
+* data i.e., active partition number is extracted. Function forms a command structure consisting
+* of Message ID, Command, Object ID, Instance, Parameter and Checksum.
+* The Transmit and Receive packet is encoded with '0xdd 0x01' in the beginning and
+* '0xdd 0x02' in the end representing RS-232 frame marker required to ensure
+* synchronization between control module and WSS.
+*
+* Tx packet to WSS module : 0xdd 0x01 MID LEN CMD OBJ INS PAR SUM 0xdd 0x02
+*		SUM (1 byte) = XOR from MID to PAR
+*
+* Response from WSS : 0xdd 0x01 MID LEN RES DATA SUM 0xdd 0x02
+*
+* Function takes two arguments - UART port number and character pointer. UART port
+* is used to transmit and receive data packets from/to Nistica WSS module. Certain
+* validation in the receive packet such as Message ID, Length and Result is done
+* by the function and the active partition number is extracted and returned.
+* 
+* @param uart_port_number
+* an unsigned integer, represents the particular UART port to which Nistica WSS is connected
+*
+*	Example: 1
+*
+* @param active_partition_number
+* a character pointer, represents the data in which active_partition_number is returned.
+*
+*	Example: 1
+*
+* @return an integer
+*  <BR>  0  : Success
+*  <BR> -1  : Failure
+*/
+int get_active_partition_number_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *active_partition_number )
+{
+	char packet_to_transmit[11]={0};
+	char uart_received_packet_return[110]={0};
+
+	int transmit_packet=0,
+		receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+
+	packet_to_transmit = { 0xdd, 0x01, 0x01, 0x05, READ_CMD, 0x0b, 0x01, 0x00, 0x0f, 0xdd, 0x02 };
+	length_of_packet_to_transmit = strlen(packet_to_transmit); 
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+		printf("Error : Failed to transmit packet via UART Port in get_active_partition_of_nistica_wss_module()\n");
+		return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+   		printf("Error : Failed to receive packet via UART Port in get_active_partition_of_nistica_wss_module()\n");
+    	return FAILURE;
+	}
+
+	Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+	Validate RES -> SUCCESS == uart_received_packet_return[4];
+	Validate LEN -> 0x66 == uart_received_packet_return[3];
+	
+	If all validation passes ->
+				extract active partition number from uart_received_packet_return from 5th byte
+	
+	If any validation fail -> 
+				Return error with appropriate error message/reason for failure
+}
+
+/**
+* @brief Function will Get Booted partition number from Nistica WSS module
+*
+* This function reads the Flash Information from WSS module and then the required
+* data i.e., Booted partition number is extracted. Function forms a command structure consisting
+* of Message ID, Command, Object ID, Instance, Parameter and Checksum.
+* The Transmit and Receive packet is encoded with '0xdd 0x01' in the beginning and
+* '0xdd 0x02' in the end representing RS-232 frame marker required to ensure
+* synchronization between control module and WSS.
+*
+* Tx packet to WSS module : 0xdd 0x01 MID LEN CMD OBJ INS PAR SUM 0xdd 0x02
+*		SUM (1 byte) = XOR from MID to PAR
+*
+* Response from WSS : 0xdd 0x01 MID LEN RES DATA SUM 0xdd 0x02
+*
+* Function takes two arguments - UART port number and character pointer. UART port
+* is used to transmit and receive data packets from/to Nistica WSS module. Certain
+* validation in the receive packet such as Message ID, Length and Result is done
+* by the function and the Booted partition number is extracted and returned.
+* 
+* @param uart_port_number
+* an unsigned integer, represents the particular UART port to which Nistica WSS is connected
+*
+*	Example: 1
+*
+* @param booted_partition_number
+* a character pointer, represents the data in which booted_partition_number is returned.
+*
+*	Example: 2
+*
+* @return an integer
+*  <BR>  0  : Success
+*  <BR> -1  : Failure
+*/
+int get_booted_partition_number_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *booted_partition_number )
+{
+	char packet_to_transmit[11]={0};
+	char uart_received_packet_return[110]={0};
+
+	int transmit_packet=0,
+		receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+
+	packet_to_transmit = { 0xdd, 0x01, 0x01, 0x05, READ_CMD, 0x0b, 0x01, 0x00, 0x0f, 0xdd, 0x02 };
+	length_of_packet_to_transmit = strlen(packet_to_transmit); 
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+		printf("Error : Failed to transmit packet via UART Port in get_booted_partition_of_nistica_wss_module()\n");
+		return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+   		printf("Error : Failed to receive packet via UART Port in get_booted_partition_of_nistica_wss_module()\n");
+    	return FAILURE;
+	}
+
+	Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+	Validate RES -> SUCCESS == uart_received_packet_return[4];
+	Validate LEN -> 0x66 == uart_received_packet_return[3];
+	
+	If all validation passes ->
+				extract booted partition number from uart_received_packet_return from 7th byte
+	
+	If any validation fail -> 
+				Return error with appropriate error message/reason for failure
+}
+
+/**
+* @brief Function will get partition 1 firmware version from Nistica WSS module
+*
+* This function reads the Flash Information from WSS module and then the required
+* data i.e., partition 1 firmware version is extracted. Function forms a command
+* structure consisting of Message ID, Command, Object ID, Instance, Parameter and
+* Checksum. The Transmit and Receive packet is encoded with '0xdd 0x01' in the
+* beginning and 0xdd 0x02' in the end representing RS-232 frame marker required to
+* ensure synchronization between control module and WSS.
+*
+* Tx packet to WSS module : 0xdd 0x01 MID LEN CMD OBJ INS PAR SUM 0xdd 0x02
+*		SUM (1 byte) = XOR from MID to PAR
+*
+* Response from WSS : 0xdd 0x01 MID LEN RES DATA SUM 0xdd 0x02
+*
+* Function takes two arguments - UART port number and character pointer. UART port
+* is used to transmit and receive data packets from/to Nistica WSS module. Certain
+* validation in the receive packet such as Message ID, Length and Result is done
+* by the function and the partition 1 firmware version is extracted and returned.
+* 
+* @param uart_port_number
+* an unsigned integer, represents the particular UART port to which Nistica WSS is connected
+*
+*	Example: 1
+*
+* @param firmware_version
+* a character pointer, represents the data in which partition_1_firmware_version is returned.
+*
+*	Example: 1.2.0.73
+*
+* @return an integer
+*  <BR>  0  : Success
+*  <BR> -1  : Failure
+*/
+
+int get_partition_1_firmware_version_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *firmware_version )
+{
+	char packet_to_transmit[11]={0};
+	char uart_received_packet_return[110]={0};
+
+	int transmit_packet=0,
+		receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+
+	packet_to_transmit = { 0xdd, 0x01, 0x01, 0x05, READ_CMD, 0x0b, 0x01, 0x00, 0x0f, 0xdd, 0x02 };
+	length_of_packet_to_transmit = strlen(packet_to_transmit); 
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+		printf("Error : Failed to transmit packet via UART Port in get_partition_1_firmware_of_nistica_wss_module()\n");
+		return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+   		printf("Error : Failed to receive packet via UART Port in get_partition_1_firmware_of_nistica_wss_module()\n");
+    	return FAILURE;
+	}
+
+	Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+	Validate RES -> SUCCESS == uart_received_packet_return[4];
+	Validate LEN -> 0x66 == uart_received_packet_return[3];
+	
+	If all validation passes ->
+				extract partition_1_firmware number from uart_received_packet_return from 9th byte to 16th byte
+	
+	If any validation fail -> 
+				Return error with appropriate error message/reason for failure
+}
+
+/**
+* @brief Function will get partition 2 firmware version from Nistica WSS module
+*
+* This function reads the Flash Information from WSS module and then the required
+* data i.e., partition 2 firmware version is extracted. Function forms a command
+* structure consisting of Message ID, Command, Object ID, Instance, Parameter and
+* Checksum. The Transmit and Receive packet is encoded with '0xdd 0x01' in the
+* beginning and 0xdd 0x02' in the end representing RS-232 frame marker required to
+* ensure synchronization between control module and WSS.
+*
+* Tx packet to WSS module : 0xdd 0x01 MID LEN CMD OBJ INS PAR SUM 0xdd 0x02
+*		SUM (1 byte) = XOR from MID to PAR
+*
+* Response from WSS : 0xdd 0x01 MID LEN RES DATA SUM 0xdd 0x02
+*
+* Function takes two arguments - UART port number and character pointer. UART port
+* is used to transmit and receive data packets from/to Nistica WSS module. Certain
+* validation in the receive packet such as Message ID, Length and Result is done
+* by the function and the partition 2 firmware version is extracted and returned.
+* 
+* @param uart_port_number
+* an unsigned integer, represents the particular UART port to which Nistica WSS is connected
+*
+*	Example: 1
+*
+* @param firmware_version
+* a character pointer, represents the data in which partition_2_firmware_version is returned.
+*
+*	Example: 2.0.0.76
+*
+* @return an integer
+*  <BR>  0  : Success
+*  <BR> -1  : Failure
+*/
+
+int get_partition_2_firmware_version_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *firmware_version )
+{
+	char packet_to_transmit[11]={0};
+	char uart_received_packet_return[110]={0};
+
+	int transmit_packet=0,
+		receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+
+	packet_to_transmit = { 0xdd, 0x01, 0x01, 0x05, READ_CMD, 0x0b, 0x01, 0x00, 0x0f, 0xdd, 0x02 };
+	length_of_packet_to_transmit = strlen(packet_to_transmit); 
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+		printf("Error : Failed to transmit packet via UART Port in get_partition_2_firmware_of_nistica_wss_module()\n");
+		return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+   		printf("Error : Failed to receive packet via UART Port in get_partition_2_firmware_of_nistica_wss_module()\n");
+    	return FAILURE;
+	}
+
+	Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+	Validate RES -> SUCCESS == uart_received_packet_return[4];
+	Validate LEN -> 0x66 == uart_received_packet_return[3];
+	
+	If all validation passes ->
+				extract partition_2_firmware number from uart_received_packet_return from 18th byte to 25th byte
+	
+	If any validation fail -> 
+				Return error with appropriate error message/reason for failure
+}
+
+/**
+* @brief Function will get bootloader version from Nistica WSS module
+*
+* This function reads the Flash Information from WSS module and then the required
+* data i.e., bootloader version is extracted. Function forms a command
+* structure consisting of Message ID, Command, Object ID, Instance, Parameter and
+* Checksum. The Transmit and Receive packet is encoded with '0xdd 0x01' in the
+* beginning and 0xdd 0x02' in the end representing RS-232 frame marker required to
+* ensure synchronization between control module and WSS.
+*
+* Tx packet to WSS module : 0xdd 0x01 MID LEN CMD OBJ INS PAR SUM 0xdd 0x02
+*		SUM (1 byte) = XOR from MID to PAR
+*
+* Response from WSS : 0xdd 0x01 MID LEN RES DATA SUM 0xdd 0x02
+*
+* Function takes two arguments - UART port number and character pointer. UART port
+* is used to transmit and receive data packets from/to Nistica WSS module. Certain
+* validation in the receive packet such as Message ID, Length and Result is done
+* by the function and the bootloader version is extracted and returned.
+* 
+* @param uart_port_number
+* an unsigned integer, represents the particular UART port to which Nistica WSS is connected
+*
+*	Example: 1
+*
+* @param bootloader_version
+* a character pointer, represents the data in which bootloader_version is returned.
+*
+*	Example: 1.2.0
+*
+* @return an integer
+*  <BR>  0  : Success
+*  <BR> -1  : Failure
+*/
+
+int get_bootloader_version_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *bootloader_version )
+{
+	char packet_to_transmit[11]={0};
+	char uart_received_packet_return[110]={0};
+
+	int transmit_packet=0,
+		receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+
+	packet_to_transmit = { 0xdd, 0x01, 0x01, 0x05, READ_CMD, 0x0b, 0x01, 0x00, 0x0f, 0xdd, 0x02 };
+	length_of_packet_to_transmit = strlen(packet_to_transmit); 
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+		printf("Error : Failed to transmit packet via UART Port in get_bootloader_version_of_nistica_wss_module()\n");
+		return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+   		printf("Error : Failed to receive packet via UART Port in get_bootloader_version_of_nistica_wss_module()\n");
+    	return FAILURE;
+	}
+
+	Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+	Validate RES -> SUCCESS == uart_received_packet_return[4];
+	Validate LEN -> 0x66 == uart_received_packet_return[3];
+	
+	If all validation passes ->
+				extract bootloader_version number from uart_received_packet_return from 27th byte to 31th byte
+	
+	If any validation fail -> 
+				Return error with appropriate error message/reason for failure
+}
+
+/**
+* @brief Function will get module uptime low word from Nistica WSS module
+*
+* This function reads the uptime Information from WSS module and then the required
+* data i.e., module uptime low word is extracted. Function forms a command
+* structure consisting of Message ID, Command, Object ID, Instance, Parameter and
+* Checksum. The Transmit and Receive packet is encoded with '0xdd 0x01' in the
+* beginning and 0xdd 0x02' in the end representing RS-232 frame marker required to
+* ensure synchronization between control module and WSS.
+*
+* Tx packet to WSS module : 0xdd 0x01 MID LEN CMD OBJ INS PAR SUM 0xdd 0x02
+*		SUM (1 byte) = XOR from MID to PAR
+*
+* Response from WSS : 0xdd 0x01 MID LEN RES DATA SUM 0xdd 0x02
+*
+* Function takes two arguments - UART port number and character pointer. UART port
+* is used to transmit and receive data packets from/to Nistica WSS module. Certain
+* validation in the receive packet such as Message ID, Length and Result is done
+* by the function and the module uptime low word is extracted and returned.
+* 
+* @param uart_port_number
+* an unsigned integer, represents the particular UART port to which Nistica WSS is connected
+*
+*	Example: 1
+*
+* @param module_uptime_low
+* a character pointer, represents the data in which module uptime low word is returned.
+*
+*	Example: 1
+*
+* @return an integer
+*  <BR>  0  : Success
+*  <BR> -1  : Failure
+*/
+
+int get_module_uptime_low_word_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *module_uptime_low )
+{
+	char packet_to_transmit[11]={0};
+	char uart_received_packet_return[75]={0};
+
+	int transmit_packet=0,
+		receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+
+	packet_to_transmit = { 0xdd, 0x01, 0x01, 0x05, READ_CMD, 0x92, 0x01, 0x00, 0x96, 0xdd, 0x02 };
+	length_of_packet_to_transmit = strlen(packet_to_transmit); 
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+		printf("Error : Failed to transmit packet via UART Port in get_module_uptime_low_word_of_nistica_wss_module()\n");
+		return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+   		printf("Error : Failed to receive packet via UART Port in get_module_uptime_low_word_of_nistica_wss_module()\n");
+    	return FAILURE;
+	}
+
+	Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+	Validate RES -> SUCCESS == uart_received_packet_return[4];
+		
+	If all validation passes ->
+				extract module uptime low word from uart_received_packet_return from 5th byte
+	
+	If any validation fail -> 
+				Return error with appropriate error message/reason for failure
+}
+
+/**
+* @brief Function will get module uptime high word from Nistica WSS module
+*
+* This function reads the uptime Information from WSS module and then the required
+* data i.e., module uptime high word is extracted. Function forms a command
+* structure consisting of Message ID, Command, Object ID, Instance, Parameter and
+* Checksum. The Transmit and Receive packet is encoded with '0xdd 0x01' in the
+* beginning and 0xdd 0x02' in the end representing RS-232 frame marker required to
+* ensure synchronization between control module and WSS.
+*
+* Tx packet to WSS module : 0xdd 0x01 MID LEN CMD OBJ INS PAR SUM 0xdd 0x02
+*		SUM (1 byte) = XOR from MID to PAR
+*
+* Response from WSS : 0xdd 0x01 MID LEN RES DATA SUM 0xdd 0x02
+*
+* Function takes two arguments - UART port number and character pointer. UART port
+* is used to transmit and receive data packets from/to Nistica WSS module. Certain
+* validation in the receive packet such as Message ID, Length and Result is done
+* by the function and the module uptime high word is extracted and returned.
+* 
+* @param uart_port_number
+* an unsigned integer, represents the particular UART port to which Nistica WSS is connected
+*
+*	Example: 1
+*
+* @param module_uptime_high
+* a character pointer, represents the data in which module uptime high word is returned.
+*
+*	Example: 1
+*
+* @return an integer
+*  <BR>  0  : Success
+*  <BR> -1  : Failure
+*/
+
+int get_module_uptime_high_word_of_nistica_wss_module( unsigned int uart_port_number, unsigned char *module_uptime_high )
+{
+	char packet_to_transmit[11]={0};
+	char uart_received_packet_return[75]={0};
+
+	int transmit_packet=0,
+		receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+
+	packet_to_transmit = { 0xdd, 0x01, 0x01, 0x05, READ_CMD, 0x92, 0x02, 0x00, 0x95, 0xdd, 0x02 };
+	length_of_packet_to_transmit = strlen(packet_to_transmit); 
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+		printf("Error : Failed to transmit packet via UART Port in get_module_uptime_high_word_of_nistica_wss_module()\n");
+		return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+   		printf("Error : Failed to receive packet via UART Port in get_module_uptime_high_word_of_nistica_wss_module()\n");
+    	return FAILURE;
+	}
+
+	Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+	Validate RES -> SUCCESS == uart_received_packet_return[4];
+		
+	If all validation passes ->
+				extract module uptime low word from uart_received_packet_return from 38th byte
+	
+	If any validation fail -> 
+				Return error with appropriate error message/reason for failure
+}
+
+/**
+* @brief Function will get module supports array command feature from Nistica WSS module
+*
+* This function reads the ArrayCmdsFeature Information from WSS module and then the required
+* data i.e., module supports array command is extracted. Function forms a command
+* structure consisting of Message ID, Command, Object ID, Instance, Parameter and
+* Checksum. The Transmit and Receive packet is encoded with '0xdd 0x01' in the
+* beginning and 0xdd 0x02' in the end representing RS-232 frame marker required to
+* ensure synchronization between control module and WSS.
+*
+* Tx packet to WSS module : 0xdd 0x01 MID LEN CMD OBJ INS PAR SUM 0xdd 0x02
+*		SUM (1 byte) = XOR from MID to PAR
+*
+* Response from WSS : 0xdd 0x01 MID LEN RES DATA SUM 0xdd 0x02
+*
+* Function takes two arguments - UART port number and character pointer. UART port
+* is used to transmit and receive data packets from/to Nistica WSS module. Certain
+* validation in the receive packet such as Message ID, Length and Result is done
+* by the function and the status of module supports array command is extracted and returned.
+* 
+* @param uart_port_number
+* an unsigned integer, represents the particular UART port to which Nistica WSS is connected
+*
+*	Example: 1
+*
+* @param status_of_array_cmd
+* a character pointer, represents the data in which status of module supports array command is returned.
+*
+*	Example: 1
+*
+* @return an integer
+*  <BR>  0  : Success
+*  <BR> -1  : Failure
+*/
+
+int get_module_supports_array_commands_of_nistica_wss_module( unsigned int uart_port_number, unsigned int status_of_array_cmd )
+{
+	char packet_to_transmit[11]={0};
+	char uart_received_packet_return[15]={0};
+
+	int transmit_packet=0,
+		receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+
+	packet_to_transmit = { 0xdd, 0x01, 0x01, 0x05, READ_CMD, 0x78, 0x01, 0x00, 0x7c, 0xdd, 0x02 };
+	length_of_packet_to_transmit = strlen(packet_to_transmit); 
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+		printf("Error : Failed to transmit packet via UART Port in get_module_supports_array_commands_of_nistica_wss_module()\n");
+		return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+   		printf("Error : Failed to receive packet via UART Port in get_module_supports_array_commands_of_nistica_wss_module()\n");
+    	return FAILURE;
+	}
+
+	Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+	Validate RES -> SUCCESS == uart_received_packet_return[4];
+		
+	If all validation passes ->
+				extract module uptime low word from uart_received_packet_return from 5th byte
+	
+	If any validation fail -> 
+				Return error with appropriate error message/reason for failure
+}
+
+/**
  * @brief Function will Get the result of any boot-time self-tests of Nistica WSS module
  *
  * This function reads the result of any boot-time self-tests like SDRAM,Flash image, 
@@ -1482,6 +2085,97 @@ int set_waveplan_of_nistica_wss_module( unsigned int uart_port_number, unsigned 
 				Return error with appropriate error message/reason for failure
 }
 
+/**
+ * @brief Function will Assign Waveplan ID for a waveplan in Nistica WSS module
+ *
+ * This function is used to set the Waveplan ID for a particular waveplan configuration.
+ * Function forms a command structure consisting of Message ID, Command, Object ID,
+ * WSS ID, Altconf ID and Waveplan ID. User provides the WSS ID, Altconf ID and Waveplan ID.
+ *
+ * When this function is called, it triggers a switchover in WSS module. If
+ * BootSwRestore is enabled, this active configuration is part of the state saved
+ * to non-volatile memory and restored at cold boot. If not, the module cold
+ * boots into configuration 0, and all configurations will be full dark.
+ *
+ * The Transmit and Receive packet is encoded with '0xdd 0x01' in the beginning
+ * and '0xdd 0x02' in the end representing RS-232 frame marker required to ensure
+ * synchronization between control module and WSS.
+ *
+ * Function takes four arguments - UART port number, WSS ID, Altconf ID and
+ * Waveplan ID. UART port is used to transmit and receive data packets from/to
+ * Nistica WSS module. Response for the transmit message is received from module
+ * through UART. Certain validation in the receive packet such as Message ID
+ * and Result is done and status is returned.
+ *
+ * @param uart_port_number
+ * an unsigned integer, represents the particular UART port to which Nistica WSS is connected
+ *	Example: 1
+ *
+ * @param wss_id
+ * an unsigned short, that refers to WSS in the module
+ *	Example: 0, 1, 2
+ *
+ * @param altconf_id
+ * an unsigned short, represents the alternate configuration ID of a particular configuration
+ *	Example: 0, 1, 2, 3
+ *
+ * @param waveplan_id
+ * an unsigned short, represents the Waveplan ID to be assigned for a waveplan
+ *	Example: 2
+ *
+ * @return an integer
+ *  <BR>  0  : Success
+ *  <BR> -1  : Failure
+**/
+int assign_particular_waveplan_of_nistica_wss_module( unsigned int uart_port_number, unsigned short wss_id, unsigned short altconf_id, unsigned short *waveplan_id )
+{
+	char uart_received_packet_return[255]={0};
+
+	int transmit_packet=0,
+	    receive_packet=0;
+
+	unsigned int length_of_packet_to_transmit=0;
+	unsigned int length_of_received_packet_return=0;
+	unsigned char checksum = 0;
+
+	unsigned char table_byte = (char)(( altconf_id << 4 )| wss_id); // combining the wss_id and altconf_id into single byte
+	unsigned char *waveplan_id_pointer = (unsigned char*) &waveplan_id;
+
+	unsigned char packet_to_transmit[] = {0xdd, 0x01, 0x01, 0x08, WRITE_CMD | 0x20, 0xA8, table_byte, 0x06, 0x01, waveplan_id_pointer[0], waveplan_id_pointer[1] };
+				
+	checksum = calculate_checksum( packet_to_transmit[2], strlen(packet_to_transmit));
+	packet_to_transmit[11] = checksum;
+	packet_to_transmit[12] = 0xdd;
+	packet_to_transmit[13] = 0x02;
+
+	length_of_packet_to_transmit = strlen(packet_to_transmit);
+
+	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
+	if(SUCCESS != transmit_packet)
+	{
+        printf("Error : Failed to transmit packet via UART Port in assign_particular_waveplan_of_nistica_wss_module()\n");
+        return FAILURE;
+	}
+
+	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
+
+	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
+	if(SUCCESS != receive_packet)
+	{
+        printf("Error : Failed to receive packet via UART Port in assign_particular_waveplan_of_nistica_wss_module()\n");
+        return FAILURE;
+	}
+
+    Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
+    Validate RES -> SUCCESS == uart_received_packet_return[4];
+
+    If above validation passes ->
+				return SUCCESS
+
+	If any validation fail ->
+				Return error with appropriate error message/reason for failure
+}
+
 int set_channel_port_of_nistica_wss_module( unsigned int uart_port_number, unsigned short start_of_channel, 
 										 unsigned short end_of_channel, char port_id)
 {
@@ -1749,97 +2443,6 @@ int set_channel_port_and_attenuation_in_twin_wss_of_nistica_wss_module( unsigned
 	if(SUCCESS != receive_packet)
 	{
         printf("Error : Failed to receive packet via UART Port in set_channel_port_and_attenuation_in_twin_wss_of_nistica_wss_module()\n");
-        return FAILURE;
-	}
-
-    Validate MID -> packet_to_transmit[2] == uart_received_packet_return[2];
-    Validate RES -> SUCCESS == uart_received_packet_return[4];
-
-    If above validation passes ->
-				return SUCCESS
-
-	If any validation fail ->
-				Return error with appropriate error message/reason for failure
-}
-
-/**
- * @brief Function will Assign Waveplan ID for a waveplan in Nistica WSS module
- *
- * This function is used to set the Waveplan ID for a particular waveplan configuration.
- * Function forms a command structure consisting of Message ID, Command, Object ID,
- * WSS ID, Altconf ID and Waveplan ID. User provides the WSS ID, Altconf ID and Waveplan ID.
- *
- * When this function is called, it triggers a switchover in WSS module. If
- * BootSwRestore is enabled, this active configuration is part of the state saved
- * to non-volatile memory and restored at cold boot. If not, the module cold
- * boots into configuration 0, and all configurations will be full dark.
- *
- * The Transmit and Receive packet is encoded with '0xdd 0x01' in the beginning
- * and '0xdd 0x02' in the end representing RS-232 frame marker required to ensure
- * synchronization between control module and WSS.
- *
- * Function takes four arguments - UART port number, WSS ID, Altconf ID and
- * Waveplan ID. UART port is used to transmit and receive data packets from/to
- * Nistica WSS module. Response for the transmit message is received from module
- * through UART. Certain validation in the receive packet such as Message ID
- * and Result is done and status is returned.
- *
- * @param uart_port_number
- * an unsigned integer, represents the particular UART port to which Nistica WSS is connected
- *	Example: 1
- *
- * @param wss_id
- * an unsigned short, that refers to WSS in the module
- *	Example: 0, 1, 2
- *
- * @param altconf_id
- * an unsigned short, represents the alternate configuration ID of a particular configuration
- *	Example: 0, 1, 2, 3
- *
- * @param waveplan_id
- * an unsigned short, represents the Waveplan ID to be assigned for a waveplan
- *	Example: 2
- *
- * @return an integer
- *  <BR>  0  : Success
- *  <BR> -1  : Failure
-**/
-int assign_particular_waveplan_of_nistica_wss_module( unsigned int uart_port_number, unsigned short wss_id, unsigned short altconf_id, unsigned short *waveplan_id )
-{
-	char uart_received_packet_return[255]={0};
-
-	int transmit_packet=0,
-	    receive_packet=0;
-
-	unsigned int length_of_packet_to_transmit=0;
-	unsigned int length_of_received_packet_return=0;
-	unsigned char checksum = 0;
-
-	unsigned char table_byte = (char)(( altconf_id << 4 )| wss_id); // combining the wss_id and altconf_id into single byte
-	unsigned char *waveplan_id_pointer = (unsigned char*) &waveplan_id;
-
-	unsigned char packet_to_transmit[] = {0xdd, 0x01, 0x01, 0x08, WRITE_CMD | 0x20, 0xA8, table_byte, 0x06, 0x01, waveplan_id_pointer[0], waveplan_id_pointer[1] };
-				
-	checksum = calculate_checksum( packet_to_transmit[2], strlen(packet_to_transmit));
-	packet_to_transmit[11] = checksum;
-	packet_to_transmit[12] = 0xdd;
-	packet_to_transmit[13] = 0x02;
-
-	length_of_packet_to_transmit = strlen(packet_to_transmit);
-
-	transmit_packet = transmit_packet_via_uart_port(uart_port_number, packet_to_transmit, length_of_packet_to_transmit);
-	if(SUCCESS != transmit_packet)
-	{
-        printf("Error : Failed to transmit packet via UART Port in assign_particular_waveplan_of_nistica_wss_module()\n");
-        return FAILURE;
-	}
-
-	//usleep(WAIT_TIME_TO_RECEIVE_PACKET_FROM_MODULE);
-
-	receive_packet = receive_packet_via_uart_port(uart_port_number, uart_received_packet_return, &length_of_received_packet_return);
-	if(SUCCESS != receive_packet)
-	{
-        printf("Error : Failed to receive packet via UART Port in assign_particular_waveplan_of_nistica_wss_module()\n");
         return FAILURE;
 	}
 
